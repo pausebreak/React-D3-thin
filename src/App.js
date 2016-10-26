@@ -15,7 +15,7 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
         </header>
 
-        <Graphy data={data} graph={graph} count={count} id={"ff"} coordinateSystem={{ width: 500, height: 500}}/>
+        <Graphy data={data} columnName="name" graph={graph} count={count} id={"ff"} coordinateSystem={{ width: 800, height: 600}}/>
       </div>
     );
   }

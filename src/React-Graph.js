@@ -7,9 +7,9 @@ class Graphy extends Component {
 		console.log("componentDidMount", this.props);
 		// initialize D3
 
-    const { id, data, graph } = this.props;
+    const { id, data, graph, columnName } = this.props;
     const { width, height } = this.props.coordinateSystem;
-    graph(id, data, width, height);
+    graph(id, data, columnName, width, height);
   }
 
   componentWillUnmount() {
@@ -26,10 +26,10 @@ class Graphy extends Component {
 
     if (nextProps !== this.props) {
 
-      const { id, data, graph } = nextProps;
+      const { id, data, graph, columnName } = nextProps;
       const { width, height } = this.props.coordinateSystem;
 
-      graph(id, data, width, height);
+      graph(id, data, columnName, width, height);
     }
     // never update ( ie, call render() )
     return false;
@@ -50,6 +50,7 @@ class Graphy extends Component {
 Graphy.propTypes = {
   id: PropTypes.string.isRequired,
   graph: PropTypes.func.isRequired,
+  columnName: PropTypes.string.isRequired,
   coordinateSystem: PropTypes.shape({
       width: PropTypes.number,
       height: PropTypes.number,
