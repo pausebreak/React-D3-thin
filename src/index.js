@@ -14,7 +14,7 @@ let data = [
 ];
 
 ReactDOM.render(
-  <App state={{count: 1, data: data}} />,
+  <App state={{data: data}} />,
   document.getElementById('root')
 );
 
@@ -23,7 +23,7 @@ window.setTimeout(() => {
 data.push({name: 'Page H', uv: 3490, pv: 4300, amt: 2900, xv: 0});
 
 ReactDOM.render(
-  <App state={{count: 2, data: data}} />,
+  <App state={{data: data}} />,
   document.getElementById('root')
 );
 

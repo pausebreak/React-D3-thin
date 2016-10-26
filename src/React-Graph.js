@@ -3,6 +3,16 @@ import './App.css';
 
 class Graphy extends Component {
 
+  static propTypes = {
+    id: PropTypes.string.isRequired,
+    graph: PropTypes.func.isRequired,
+    columnName: PropTypes.string.isRequired,
+    coordinateSystem: PropTypes.shape({
+        width: PropTypes.number,
+        height: PropTypes.number,
+    })
+  }
+
   componentDidMount() {
 		console.log("componentDidMount", this.props);
 		// initialize D3
@@ -15,6 +25,10 @@ class Graphy extends Component {
   componentWillUnmount() {
 		console.log("componentWillUnmount");
     // clean up D3
+    // in general you don't have to clean up D3
+    // removing the SVG node is all you need and
+    // react will take care of that since React
+    // created the SVG.
   }
 
 	componentWillReceiveProps(nextProps) {
@@ -45,16 +59,6 @@ class Graphy extends Component {
       <svg id={this.props.id} viewBox={viewBox} version="1.1"></svg>
     );
   }
-}
-
-Graphy.propTypes = {
-  id: PropTypes.string.isRequired,
-  graph: PropTypes.func.isRequired,
-  columnName: PropTypes.string.isRequired,
-  coordinateSystem: PropTypes.shape({
-      width: PropTypes.number,
-      height: PropTypes.number,
-  })
 }
 
 export default Graphy;
