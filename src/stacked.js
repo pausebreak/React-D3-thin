@@ -1,4 +1,5 @@
-import { keys, min, max, schemeCategory20, scaleLinear, scaleBand, select, stack, scaleOrdinal, axisBottom } from 'd3';
+import { keys, min, max, schemeCategory20, scaleLinear, stackOrderAscending, scaleBand, select, stack, scaleOrdinal, axisLeft, axisBottom } from 'd3';
+import colors from './colors.js';
 
 let memoize = fn => {
   const cache = {};
@@ -8,7 +9,7 @@ let memoize = fn => {
   };
 };
 
-let getScaleBand = width => scaleBand().rangeRound([0, width], .35),
+let getScaleBand = width => scaleBand().range([0, width]).paddingInner(0.4).paddingOuter(0.4),
     memoScaleBand = memoize(getScaleBand);
 
 let getScaleLinear = height => scaleLinear().rangeRound([height, 0]),
@@ -16,48 +17,35 @@ let getScaleLinear = height => scaleLinear().rangeRound([height, 0]),
 
 function graph(id, data, columnName, width, height) {
 
-  var margin = {top: 50, right: 10, bottom: 40, left: 10};
-  var _width = width - margin.left - margin.right,
-      _height = height - margin.top - margin.bottom;
+  let margin = {top: 50, right: 10, bottom: 40, left: 10},
+      _width = width - margin.left - margin.right,
+      _height = height - margin.top - margin.bottom,
+      svg = select(`#${id} g`);
 
-  const getSVG = id => select(`#${id}`)
-                       .attr("style", "background-color: red;")
-                       .append("g")
-                         .attr("transform", `translate(${margin.left}, ${margin.top})`);
-  const memoGetSVG = memoize(getSVG);
-
-  let svg = select(`#${id} g`);
-
+  // we have to guard against recreating g
+  // can this be achieved via data binding?
   if (svg.empty()) {
-    svg = memoGetSVG(id);
+    svg = select(`#${id}`)
+            .append("g")
+              .attr("transform", `translate(${margin.left}, ${margin.top})`);
   }
 
   const x = memoScaleBand(_width);
   const y = memoScaleLinear(_height);
-  const color = memoize(scaleOrdinal(schemeCategory20));
+  const color = memoize(scaleOrdinal(colors));
 
   let _keys = keys(data[0]).filter(d => d !== columnName);
 
   console.log("Column keys ", _keys);
-  var series = stack().keys(_keys)(data);
+  var series = stack().keys(_keys).order(stackOrderAscending)(data);
 
   var xData = data.map(d => d[columnName]);
   x.domain(xData);
 
   console.log("x domain is ", x.domain());
 
-  const upperValues = series.map(d => {
-	  // there is an index: and key: in a series
-    // which we don't want
-    return d.length ? d[d.length -1][1] : null;
-  });
-  const lowerValues = series.map(d => {
-  	// there is an index: and key: in a series
-    // which we don't want
-    return d.length ? d[0][0] : null;
-  });
-  const upper = max(upperValues);
-  const lower = min(lowerValues);
+  const upper = max(series.map(d => max(d.map(i => i[1]))));
+  const lower = min(series.map(d => min(d.map(i => i[0]))));
 
   y.domain([lower, upper]).nice();
 
@@ -67,22 +55,29 @@ function graph(id, data, columnName, width, height) {
 
   main.exit().remove();
 
+  // yaxis comes first so it is behind the graph
+  svg.select("g.yaxis").remove();
+  svg
+    .append("g")
+      .attr("class", "yaxis")
+	    // size of -_width to cover the whole width of the graph
+      .call(axisLeft(y).tickSize(-_width));
+
   const stacks = main.enter()
                    .append("g")
                      .attr("class", "stack")
-                     .style("fill", (d, i) => color(i));
+                     .style("fill", (d, i) => color(d.key));
 
-	svg.exit().remove();
 	stacks.exit().remove();
 
   const rectangles = stacks.selectAll("rect").data(d => d);
 
   rectangles.enter()
     .append("rect")
-      .attr("width", x.bandwidth)
+      .attr("width", x.bandwidth())
       .attr("x", d => x(d.data[columnName]))
-      .attr("y", d => y(d[0] + d[1]))
-      .attr("height", d => y(d[0]) - y(d[1] + d[0]));
+      .attr("y", d => y(d[1]))
+      .attr("height", d => y(d[0]) - y(d[1]));
 
   rectangles.exit().remove();
 
@@ -91,20 +86,41 @@ function graph(id, data, columnName, width, height) {
   svg
    .append("g")
      .attr("class", "xaxis")
-     .attr("transform", "translate(0," + (_height) + ")")
+     .attr("transform", "translate(0," + _height + ")")
      .call(axisBottom(x));
 
   svg.select("text.xaxis").remove();
 
-  // text label for the x axis
+
+  svg.select("text.yaxislabel").remove();
   svg
    .append("text")
-     .attr("class", "xaxis")
-     .attr("transform",
-           "translate(" + (_width/2) + " ," +
-                          (_height + 30) + ")")
-     .style("text-anchor", "middle")
-     .text("Name");
+     .attr("class", "yaxislabel")
+     .attr("transform", "translate(-50, 80) rotate(-90)")
+     .style("text-anchor", "start")
+     .text("What this is");
+
+  const seriesSortedKeys = series.reduce((p, n) => { p[n.index] = n.key; return p}, []);
+
+  let legend = svg.selectAll(".legend")
+    .data(seriesSortedKeys.reverse())
+    .enter().append("g")
+      .attr("class", "legend")
+      .attr("transform", (d, i) => `translate(0, ${i * 20})`)
+      .style("font", "10px sans-serif");
+
+  legend.append("rect")
+      .attr("x", width + 50)
+      .attr("width", 18)
+      .attr("height", 18)
+      .attr("fill", (d, i) => color(d));
+
+  legend.append("text")
+      .attr("x", width +25 )
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .attr("text-anchor", "end")
+      .text(d => d);
 }
 
 export default graph;
