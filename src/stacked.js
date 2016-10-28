@@ -1,4 +1,4 @@
-import { keys, min, max, schemeCategory20, scaleLinear, stackOrderAscending, scaleBand, select, stack, scaleOrdinal, axisLeft, axisBottom } from 'd3';
+import { keys, min, max, scaleLinear, stackOrderAscending, scaleBand, select, stack, scaleOrdinal, axisLeft, axisBottom } from 'd3';
 import colors from './colors.js';
 
 let memoize = fn => {
@@ -91,7 +91,6 @@ function graph(id, data, columnName, width, height) {
 
   svg.select("text.xaxis").remove();
 
-
   svg.select("text.yaxislabel").remove();
   svg
    .append("text")
@@ -100,10 +99,13 @@ function graph(id, data, columnName, width, height) {
      .style("text-anchor", "start")
      .text("What this is");
 
-  const seriesSortedKeys = series.reduce((p, n) => { p[n.index] = n.key; return p}, []);
+  const seriesSortedKeys = series.reduce((p, n) => { p[n.index] = n.key; return p}, [])
+                                 .reverse();
+
+  svg.selectAll(".legend").remove();
 
   let legend = svg.selectAll(".legend")
-    .data(seriesSortedKeys.reverse())
+    .data(seriesSortedKeys, d => d)
     .enter().append("g")
       .attr("class", "legend")
       .attr("transform", (d, i) => `translate(0, ${i * 20})`)
@@ -113,7 +115,7 @@ function graph(id, data, columnName, width, height) {
       .attr("x", width + 50)
       .attr("width", 18)
       .attr("height", 18)
-      .attr("fill", (d, i) => color(d));
+      .attr("fill", d => color(d));
 
   legend.append("text")
       .attr("x", width +25 )

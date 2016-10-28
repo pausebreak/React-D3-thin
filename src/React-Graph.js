@@ -4,21 +4,26 @@ import './App.css';
 class Graphy extends Component {
 
   static propTypes = {
-    id: PropTypes.string.isRequired,
     graph: PropTypes.func.isRequired,
-    columnName: PropTypes.string.isRequired,
-    coordinateSystem: PropTypes.shape({
-        width: PropTypes.number,
-        height: PropTypes.number,
-    })
+    config: PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      columnName: PropTypes.string.isRequired,
+      coordinateSystem: PropTypes.shape({
+          x: PropTypes.number,
+          y: PropTypes.number,
+          width: PropTypes.number,
+          height: PropTypes.number,
+      })
+    }).isRequired
   }
 
   componentDidMount() {
 		console.log("componentDidMount", this.props);
 		// initialize D3
 
-    const { id, data, graph, columnName } = this.props;
-    const { width, height } = this.props.coordinateSystem;
+    const { data, graph, config } = this.props;
+    const { id, columnName, coordinateSystem } = config;
+    const { width, height } = coordinateSystem;
     graph(id, data, columnName, width, height);
   }
 
@@ -40,8 +45,9 @@ class Graphy extends Component {
 
     if (nextProps !== this.props) {
 
-      const { id, data, graph, columnName } = nextProps;
-      const { width, height } = this.props.coordinateSystem;
+      const { data, graph, config } = nextProps;
+      const { id, columnName, coordinateSystem } = config;
+      const { width, height } = coordinateSystem;
 
       graph(id, data, columnName, width, height);
     }
@@ -52,11 +58,19 @@ class Graphy extends Component {
   render() {
 		console.log("render", this.props);
 
-    const { width, height } = this.props.coordinateSystem;
-		const viewBox = `0 0 ${width} ${height}`;
+    const { id, width, height, coordinateSystem } = this.props.config;
+    const cs = coordinateSystem;
+		const viewBox = `${cs.x} ${cs.y} ${cs.width} ${cs.height}`;
+    const other = {};
+
+    if (width && height) {
+      other.width = width;
+      other.height = height;
+    }
+
 		// this will only be called once
     return (
-      <svg id={this.props.id} viewBox={viewBox} version="1.1"></svg>
+      <svg {...other} id={id} viewBox={viewBox} version="1.1"></svg>
     );
   }
 }

@@ -7,14 +7,21 @@ import './App.css';
 class App extends Component {
 
   render() {
-    const { data } = this.props.state;
+    const { data } = this.props.state
+    const config = {
+      columnName: "name",
+      id: "stack",
+      // this becomes viewBox but is also used for internal
+      // calculations similar to http://bl.ocks.org/mbostock/3019563
+      coordinateSystem: { x:0, y:0, width: 800, height: 600 }
+    };
 
     return (
       <div className="App">
         <header>
           <img src={logo} className="App-logo" alt="logo" />
         </header>
-        <Graphy data={data} columnName="name" graph={graph} id={"stack"} coordinateSystem={{ width: 800, height: 600}}/>
+        <Graphy data={data} graph={graph} config={config} />
       </div>
     );
   }

@@ -4,13 +4,13 @@ import App from './App';
 import './index.css';
 
 let data = [
-  {name: 'Page A', uv: 4000, pv: 2400, amt: 2400, xv: 2000},
-  {name: 'Page B', uv: 3000, pv: 1398, amt: 2210, xv: 3333},
-  {name: 'Page C', uv: 2000, pv: 9800, amt: 2290, xv: 0},
-  {name: 'Page D', uv: 2780, pv: 3908, amt: 2000, xv: 0},
-  {name: 'Page E', uv: 1890, pv: 4800, amt: 2181, xv: 0},
-  {name: 'Page F', uv: 2390, pv: 3800, amt: 2500, xv: 0},
-  {name: 'Page G', uv: 3490, pv: 4300, amt: 2100, xv: 0}
+  {name: 'A', ducks: 4000, cats: 2400, goats: 2400, dogs: 2000},
+  {name: 'B', ducks: 3000, cats: 1398, goats: 2210, dogs: 3333},
+  {name: 'C', ducks: 2000, cats: 9800, goats: 2290, dogs: 0},
+  {name: 'D', ducks: 2780, cats: 3908, goats: 2000, dogs: 0},
+  {name: 'E', ducks: 1890, cats: 4800, goats: 2181, dogs: 0},
+  {name: 'F', ducks: 2390, cats: 3800, goats: 2500, dogs: 0},
+  {name: 'G', ducks: 3490, cats: 4300, goats: 2100, dogs: 0}
 ];
 
 ReactDOM.render(
@@ -20,11 +20,11 @@ ReactDOM.render(
 
 window.setTimeout(() => {
 
-data.push({name: 'Page H', uv: 3490, pv: 4300, amt: 2900, xv: 0});
+  data.push({name: 'H', ducks: 3490, cats: 4300, goats: 2900, dogs: 16660});
 
-ReactDOM.render(
-  <App state={{data: data}} />,
-  document.getElementById('root')
-);
+  ReactDOM.render(
+    <App state={{data: data}} />,
+    document.getElementById('root')
+  );
 
-}, 2000);
+}, 2500);
