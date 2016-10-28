@@ -15,12 +15,20 @@ let getScaleBand = width => scaleBand().range([0, width]).paddingInner(0.4).padd
 let getScaleLinear = height => scaleLinear().rangeRound([height, 0]),
     memoScaleLinear = memoize(getScaleLinear);
 
-function graph(id, data, columnName, width, height) {
+function graph(data, config) {
 
-  let margin = {top: 50, right: 10, bottom: 40, left: 10},
-      _width = width - margin.left - margin.right,
-      _height = height - margin.top - margin.bottom,
-      svg = select(`#${id} g`);
+  const { id, xAxisDomainKey, coordinateSystem, xAxisLabel, yAxisLabel, stackKeys } = config;
+  const { width, height } = coordinateSystem;
+
+  const margin = {top: 50, right: 10, bottom: 40, left: 10};
+  const _width = width - margin.left - margin.right;
+  const _height = height - margin.top - margin.bottom;
+  const x = memoScaleBand(_width);
+  const y = memoScaleLinear(_height);
+  // this might be slower to memoize than to just run each time
+  const color = memoize(scaleOrdinal(colors));
+
+  let svg = select(`#${id} g`);
 
   // we have to guard against recreating g
   // can this be achieved via data binding?
@@ -30,16 +38,13 @@ function graph(id, data, columnName, width, height) {
               .attr("transform", `translate(${margin.left}, ${margin.top})`);
   }
 
-  const x = memoScaleBand(_width);
-  const y = memoScaleLinear(_height);
-  const color = memoize(scaleOrdinal(colors));
-
-  let _keys = keys(data[0]).filter(d => d !== columnName);
+  let _keys = stackKeys || keys(data[0]).filter(d => d !== xAxisDomainKey);
 
   console.log("Column keys ", _keys);
-  var series = stack().keys(_keys).order(stackOrderAscending)(data);
 
-  var xData = data.map(d => d[columnName]);
+  const series = stack().keys(_keys).order(stackOrderAscending)(data);
+
+  const xData = data.map(d => d[xAxisDomainKey]);
   x.domain(xData);
 
   console.log("x domain is ", x.domain());
@@ -75,7 +80,7 @@ function graph(id, data, columnName, width, height) {
   rectangles.enter()
     .append("rect")
       .attr("width", x.bandwidth())
-      .attr("x", d => x(d.data[columnName]))
+      .attr("x", d => x(d.data[xAxisDomainKey]))
       .attr("y", d => y(d[1]))
       .attr("height", d => y(d[0]) - y(d[1]));
 
@@ -91,33 +96,48 @@ function graph(id, data, columnName, width, height) {
 
   svg.select("text.xaxis").remove();
 
-  svg.select("text.yaxislabel").remove();
-  svg
-   .append("text")
-     .attr("class", "yaxislabel")
-     .attr("transform", "translate(-50, 80) rotate(-90)")
-     .style("text-anchor", "start")
-     .text("What this is");
+  if (yAxisLabel) {
+    svg.select("text.yaxislabel").remove();
+    svg
+     .append("text")
+       .attr("class", "yaxislabel")
+       .attr("transform", "translate(-50, 30) rotate(-90)")
+       .style("text-anchor", "start")
+       .text(yAxisLabel);
+  }
+
+  if (xAxisLabel) {
+    svg.select("text.xaxislabel").remove();
+    svg
+     .append("text")
+       .attr("class", "xaxislabel")
+       .attr("transform", `translate(${_width - 50}, ${_height + (margin.bottom/1.5)})`)
+       .style("text-anchor", "start")
+       .text(xAxisLabel);
+  }
 
   const seriesSortedKeys = series.reduce((p, n) => { p[n.index] = n.key; return p}, [])
                                  .reverse();
 
   svg.selectAll(".legend").remove();
 
-  let legend = svg.selectAll(".legend")
+  const legend = svg.selectAll(".legend")
     .data(seriesSortedKeys, d => d)
-    .enter().append("g")
-      .attr("class", "legend")
-      .attr("transform", (d, i) => `translate(0, ${i * 20})`)
-      .style("font", "10px sans-serif");
+    .enter()
+      .append("g")
+        .attr("class", "legend")
+        .attr("transform", (d, i) => `translate(0, ${i * 20})`)
+        .style("font", "10px sans-serif");
 
-  legend.append("rect")
+  legend
+    .append("rect")
       .attr("x", width + 50)
       .attr("width", 18)
       .attr("height", 18)
       .attr("fill", d => color(d));
 
-  legend.append("text")
+  legend
+    .append("text")
       .attr("x", width +25 )
       .attr("y", 9)
       .attr("dy", ".35em")

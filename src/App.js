@@ -9,7 +9,10 @@ class App extends Component {
   render() {
     const { data } = this.props.state
     const config = {
-      columnName: "name",
+      xAxisDomainKey: "name",
+      xAxisLabel: "Rooms",
+      yAxisLabel: "Pets",
+      stackKeys: ["dogs", "cats", "goats"],
       id: "stack",
       // this becomes viewBox but is also used for internal
       // calculations similar to http://bl.ocks.org/mbostock/3019563

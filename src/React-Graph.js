@@ -7,7 +7,10 @@ class Graphy extends Component {
     graph: PropTypes.func.isRequired,
     config: PropTypes.shape({
       id: PropTypes.string.isRequired,
-      columnName: PropTypes.string.isRequired,
+      xAxisDomainKey: PropTypes.string.isRequired,
+      xAxisLabel: PropTypes.string,
+      yAxisLabel: PropTypes.string,
+      stackKeys: PropTypes.arrayOf(PropTypes.string),
       coordinateSystem: PropTypes.shape({
           x: PropTypes.number,
           y: PropTypes.number,
@@ -22,13 +25,12 @@ class Graphy extends Component {
 		// initialize D3
 
     const { data, graph, config } = this.props;
-    const { id, columnName, coordinateSystem } = config;
-    const { width, height } = coordinateSystem;
-    graph(id, data, columnName, width, height);
+
+    graph(data, config);
   }
 
   componentWillUnmount() {
-		console.log("componentWillUnmount");
+    console.log("componentWillUnmount");
     // clean up D3
     // in general you don't have to clean up D3
     // removing the SVG node is all you need and
@@ -36,20 +38,14 @@ class Graphy extends Component {
     // created the SVG.
   }
 
-	componentWillReceiveProps(nextProps) {
-		console.log("componentWillReceiveProps", nextProps);
-	}
-
 	shouldComponentUpdate(nextProps, nextState) {
-		console.log("shouldComponentUpdate", nextProps, nextState);
+    console.log("shouldComponentUpdate", nextProps, nextState);
 
     if (nextProps !== this.props) {
 
       const { data, graph, config } = nextProps;
-      const { id, columnName, coordinateSystem } = config;
-      const { width, height } = coordinateSystem;
 
-      graph(id, data, columnName, width, height);
+      graph(data, config);
     }
     // never update ( ie, call render() )
     return false;
@@ -63,6 +59,8 @@ class Graphy extends Component {
 		const viewBox = `${cs.x} ${cs.y} ${cs.width} ${cs.height}`;
     const other = {};
 
+    // you shouldn't set width and height on the svg if you want it
+    // to fill the container.
     if (width && height) {
       other.width = width;
       other.height = height;
