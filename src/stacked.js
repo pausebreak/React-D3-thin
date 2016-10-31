@@ -20,7 +20,9 @@ function graph(data, config) {
   const { id, xAxisDomainKey, coordinateSystem, xAxisLabel, yAxisLabel, stackKeys } = config;
   const { width, height } = coordinateSystem;
 
-  const margin = {top: 50, right: 10, bottom: 40, left: 10};
+  // right and left should be the same value to maintain symmetry
+  // during scaling
+  const margin = {top: 30, right: 85, bottom: 45, left: 85};
   const _width = width - margin.left - margin.right;
   const _height = height - margin.top - margin.bottom;
   const x = memoScaleBand(_width);
@@ -130,15 +132,15 @@ function graph(data, config) {
         .style("font", "10px sans-serif");
 
   legend
-    .append("rect")
-      .attr("x", width + 50)
-      .attr("width", 18)
-      .attr("height", 18)
+    .append("circle")
+      .attr("cx", _width + 65)
+      .attr("cy", 9)
+      .attr("r", 9)
       .attr("fill", d => color(d));
 
   legend
     .append("text")
-      .attr("x", width +25 )
+      .attr("x", _width + 50)
       .attr("y", 9)
       .attr("dy", ".35em")
       .attr("text-anchor", "end")
