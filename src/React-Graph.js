@@ -61,8 +61,6 @@ class Graphy extends Component {
         nextData !== propsData ||
         nextConfig !== propsConfig) {
 
-      console.log("shouldComponentUpdate is updating", nextProps, nextState);
-
       graph.update(data, config);
     }
 

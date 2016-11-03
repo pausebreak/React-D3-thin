@@ -21,25 +21,28 @@ let handlers = {
   }
 };
 
-const localState = {data: data, handlers: handlers};
+let localState = {data: data, handlers: handlers};
 
-function showTooltip(d) {
-  console.log("App renderTooltip", d);
-  localState.showTooltip = true;
-  render(localState);
+// mori where are you?
+function mutate(state) {
+
+  const mutation = Object.assign({}, localState, state);
+
+  localState = mutation;
+
+  return mutation;
 }
 
-function hideTooltip(d) {
-  console.log("App hideTooltip", d);
-  localState.showTooltip = false;
-  render(localState);
+function showTooltip(d) {
+  render(mutate({showTooltip: true, tooltipData: d}));
+}
+
+function hideTooltip() {
+  render(mutate({showTooltip: false}));
 }
 
 function moveTooltip (x, y) {
-  console.log("App move", x, y);
-  localState.tooltipX = x;
-  localState.tooltipY = y;
-  render(localState);
+  render(mutate({tooltipX: x, tooltipY: y}));
 }
 
 function render(state) {
@@ -52,7 +55,8 @@ function render(state) {
 render(localState);
 
 window.setTimeout(() => {
-  localState.data.push({name: 'H', ducks: 3490, cats: 4300, goats: 2900, dogs: 16660});
-  render(localState);
+  const d = localState.data.slice();
+  d.push({name: 'H', ducks: 3490, cats: 4300, goats: 2900, dogs: 16660});
+  render(mutate({data: d}));
   },
   2500);

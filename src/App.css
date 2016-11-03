@@ -24,6 +24,10 @@ svg {
   width: 100%;
 }
 
+rect {
+  cursor: pointer;
+}
+
 .yaxis path {
   display: none;
 }

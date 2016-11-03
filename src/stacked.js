@@ -83,7 +83,23 @@ function generateLegend(selection, data, color, widthOffset) {
   legend.exit().remove()
 }
 
-function generateRects(selection, xAxisDomainKey, tooltip, x, y) {
+function extractInformationFromSlice(data, parentKey, usedKeys) {
+
+  // there may be more keys than shown
+  const datum = usedKeys.reduce((l, k) => {
+    l[k] = data.data[k];
+    return l;
+  }, {});
+
+  datum.name = data.data.name;
+  datum.key = parentKey;
+
+  return datum;
+}
+
+function generateRects(selection, xAxisDomainKey, series, tooltip, x, y) {
+
+  const usedKeys = series.map(s => s.key);
 
   selection.enter()
     .append("rect")
@@ -91,11 +107,12 @@ function generateRects(selection, xAxisDomainKey, tooltip, x, y) {
       .attr("x", d => x(d.data[xAxisDomainKey]))
       .attr("y", d => y(d[1]))
       .attr("height", d => y(d[0]) - y(d[1]))
-      .on("mouseover", d => tooltip.over(d.data))
-			.on("mousemove", d => {
-				 tooltip.move(event.pageY-10, event.pageX+10);
+      .on("mouseover", function(d) {
+        const key = select(this.parentNode).datum().key;
+        tooltip.over(extractInformationFromSlice(d, key, usedKeys))
       })
-      .on("mouseout", d => tooltip.out(d.data));
+			.on("mousemove", d => tooltip.move(event.pageY-10, event.pageX+10))
+      .on("mouseout", tooltip.out);
 }
 
 function initialize(data, config) {
@@ -133,7 +150,7 @@ function initialize(data, config) {
 
   const rectangles = stacks.selectAll("rect").data(d => d);
 
-  generateRects(rectangles, xAxisDomainKey, tooltip, x, y);
+  generateRects(rectangles, xAxisDomainKey, series, tooltip, x, y);
 
   svg
    .append("g")
@@ -200,7 +217,7 @@ function update(data, config) {
 
   const rectangles = stacks.selectAll("rect").data(d => d);
 
-  generateRects(rectangles, xAxisDomainKey, tooltip, x, y);
+  generateRects(rectangles, xAxisDomainKey, series, tooltip, x, y);
 
   rectangles.exit().remove();
 
