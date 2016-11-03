@@ -21,6 +21,7 @@ html, body {
 
 svg {
   flex: 1;
+  width: 100%;
 }
 
 .yaxis path {

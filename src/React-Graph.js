@@ -4,13 +4,20 @@ import './App.css';
 class Graphy extends Component {
 
   static propTypes = {
-    graph: PropTypes.func.isRequired,
+    graph: PropTypes.shape({
+      initialize: PropTypes.func.isRequired,
+      update: PropTypes.func.isRequired
+    }),
     config: PropTypes.shape({
       id: PropTypes.string.isRequired,
       xAxisDomainKey: PropTypes.string.isRequired,
       xAxisLabel: PropTypes.string,
       yAxisLabel: PropTypes.string,
       stackKeys: PropTypes.arrayOf(PropTypes.string),
+      tooltip: PropTypes.shape({
+        over: PropTypes.func.isRequired,
+        out: PropTypes.func.isRequired
+      }).isRequired,
       coordinateSystem: PropTypes.shape({
           x: PropTypes.number,
           y: PropTypes.number,
@@ -26,7 +33,7 @@ class Graphy extends Component {
 
     const { data, graph, config } = this.props;
 
-    graph(data, config);
+    graph.initialize(data, config);
   }
 
   componentWillUnmount() {
@@ -39,14 +46,26 @@ class Graphy extends Component {
   }
 
 	shouldComponentUpdate(nextProps, nextState) {
-    console.log("shouldComponentUpdate", nextProps, nextState);
 
-    if (nextProps !== this.props) {
+    // these are the properties we care about
+    const { data, graph, config } = nextProps;
 
-      const { data, graph, config } = nextProps;
+    let nextData = JSON.stringify(data),
+        nextConfig = JSON.stringify(config),
+        nextGraph = JSON.stringify(graph),
+        propsData = JSON.stringify(this.props.data),
+        propsConfig = JSON.stringify(this.props.config),
+        propsGraph = JSON.stringify(this.props.graph);
 
-      graph(data, config);
+    if (nextGraph !== propsGraph ||
+        nextData !== propsData ||
+        nextConfig !== propsConfig) {
+
+      console.log("shouldComponentUpdate is updating", nextProps, nextState);
+
+      graph.update(data, config);
     }
+
     // never update ( ie, call render() )
     return false;
   }

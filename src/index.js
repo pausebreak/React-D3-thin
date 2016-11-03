@@ -13,18 +13,46 @@ let data = [
   {name: 'G', ducks: 3490, cats: 4300, goats: 2100, dogs: 0}
 ];
 
-ReactDOM.render(
-  <App state={{data: data}} />,
-  document.getElementById('root')
-);
+let handlers = {
+  tooltip: {
+    over: showTooltip,
+    out: hideTooltip,
+    move: moveTooltip
+  }
+};
 
-window.setTimeout(() => {
+const localState = {data: data, handlers: handlers};
 
-  data.push({name: 'H', ducks: 3490, cats: 4300, goats: 2900, dogs: 16660});
+function showTooltip(d) {
+  console.log("App renderTooltip", d);
+  localState.showTooltip = true;
+  render(localState);
+}
 
+function hideTooltip(d) {
+  console.log("App hideTooltip", d);
+  localState.showTooltip = false;
+  render(localState);
+}
+
+function moveTooltip (x, y) {
+  console.log("App move", x, y);
+  localState.tooltipX = x;
+  localState.tooltipY = y;
+  render(localState);
+}
+
+function render(state) {
   ReactDOM.render(
-    <App state={{data: data}} />,
+    <App state={state} />,
     document.getElementById('root')
   );
+}
 
-}, 2500);
+render(localState);
+
+window.setTimeout(() => {
+  localState.data.push({name: 'H', ducks: 3490, cats: 4300, goats: 2900, dogs: 16660});
+  render(localState);
+  },
+  2500);
