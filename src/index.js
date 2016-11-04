@@ -42,7 +42,9 @@ function hideTooltip() {
 }
 
 function moveTooltip (x, y) {
-  render(mutate({tooltipX: x, tooltipY: y}));
+  // here is where we set the offsets based on
+  // on the shape of StackTooltipContent
+  render(mutate({tooltipX: x-35, tooltipY: y-40}));
 }
 
 function render(state) {

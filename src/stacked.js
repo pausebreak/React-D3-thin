@@ -111,7 +111,7 @@ function generateRects(selection, xAxisDomainKey, series, tooltip, x, y) {
         const key = select(this.parentNode).datum().key;
         tooltip.over(extractInformationFromSlice(d, key, usedKeys))
       })
-			.on("mousemove", d => tooltip.move(event.pageY-10, event.pageX+10))
+      .on("mousemove", d => tooltip.move(event.pageX, event.pageY))
       .on("mouseout", tooltip.out);
 }
 

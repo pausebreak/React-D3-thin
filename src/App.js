@@ -3,6 +3,7 @@ import logo from './logo.svg';
 import Graphy from './React-Graph.js';
 import graph from './stacked.js';
 import Tooltip from './Tooltip.js';
+import StackTooltipContent from './StackTooltipContent.js';
 import './App.css';
 
 class App extends Component {
@@ -25,7 +26,7 @@ class App extends Component {
 
   render() {
     const { data, handlers, showTooltip, tooltipX, tooltipY, tooltipData } = this.props.state
-    const config = {
+    const graphConfig = {
       xAxisDomainKey: "name",
       xAxisLabel: "Rooms",
       yAxisLabel: "Pets",
@@ -41,7 +42,7 @@ class App extends Component {
     if (tooltipData) {
       const value = tooltipData[tooltipData.key];
       tooltipOut = (
-        <div>{tooltipData.key}: {value}</div>
+        <StackTooltipContent header={tooltipData.name} segment={tooltipData.key} value={value} />
       );
     }
 
@@ -50,7 +51,7 @@ class App extends Component {
         <header>
           <img src={logo} className="App-logo" alt="logo" />
         </header>
-        <Graphy data={data} graph={graph} config={config} />
+        <Graphy data={data} graph={graph} config={graphConfig} />
         <Tooltip show={showTooltip} x={tooltipX} y={tooltipY}>
           {tooltipOut}
         </Tooltip>

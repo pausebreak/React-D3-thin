@@ -17,7 +17,7 @@ class Tooltip extends Component {
 		}
 
     return (
-      <div className="tooltip" style={{top: `${x}px`, left: `${y}px`}}>
+      <div className="tooltip" style={{top: `${y}px`, left: `${x}px`}}>
 				{this.props.children}
       </div>
     );

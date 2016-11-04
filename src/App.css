@@ -56,9 +56,6 @@ rect {
 
 header {
   background-color: #222;
-  height: 75px;
-  padding: 20px;
-  color: white;
 }
 
 @keyframes App-logo-spin {
