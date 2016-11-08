@@ -28,6 +28,10 @@ rect {
   cursor: pointer;
 }
 
+rect:hover {
+  stroke: firebrick;
+}
+
 .yaxis path {
   display: none;
 }
