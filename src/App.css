@@ -24,35 +24,6 @@ svg {
   width: 100%;
 }
 
-rect {
-  cursor: pointer;
-}
-
-rect:hover {
-  stroke: firebrick;
-}
-
-.yaxis path {
-  display: none;
-}
-
-.yaxis line {
-  stroke: blanchedalmond;
-}
-
-.yaxis .tick:first-of-type line {
-  stroke: black;
-}
-
-.xaxis line {
-  display: none;
-}
-
-.xaxis path {
-  display: none;
-  shape-rendering: crispEdges;
-}
-
 .App-logo {
   animation: App-logo-spin infinite 20s linear;
   height: 80px;

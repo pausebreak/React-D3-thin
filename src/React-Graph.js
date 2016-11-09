@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import './App.css';
 
 class Graphy extends Component {
 
@@ -10,9 +9,10 @@ class Graphy extends Component {
     }),
     config: PropTypes.shape({
       id: PropTypes.string.isRequired,
-      xAxisDomainKey: PropTypes.string.isRequired,
-      xAxisLabel: PropTypes.string,
-      yAxisLabel: PropTypes.string,
+      svgClass: PropTypes.string.isRequired,
+      domainKey: PropTypes.string.isRequired,
+      domainLabel: PropTypes.string,
+      stackLabel: PropTypes.string,
       stackKeys: PropTypes.arrayOf(PropTypes.string),
       tooltip: PropTypes.shape({
         over: PropTypes.func.isRequired,
@@ -46,7 +46,6 @@ class Graphy extends Component {
   }
 
 	shouldComponentUpdate(nextProps, nextState) {
-
     // these are the properties we care about
     const { data, graph, config } = nextProps;
 
@@ -71,7 +70,7 @@ class Graphy extends Component {
   render() {
 		console.log("render", this.props);
 
-    const { id, width, height, coordinateSystem } = this.props.config;
+    const { id, width, height, coordinateSystem, svgClass } = this.props.config;
     const cs = coordinateSystem;
 		const viewBox = `${cs.x} ${cs.y} ${cs.width} ${cs.height}`;
     const other = {};
@@ -85,7 +84,7 @@ class Graphy extends Component {
 
 		// this will only be called once
     return (
-      <svg {...other} id={id} viewBox={viewBox} version="1.1"></svg>
+      <svg {...other} id={id} viewBox={viewBox} className={svgClass} version="1.1"></svg>
     );
   }
 }

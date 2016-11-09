@@ -1,5 +1,6 @@
 import { event, keys, min, max, scaleLinear, stackOrderAscending, scaleBand, select, stack, scaleOrdinal, axisLeft, axisBottom } from 'd3';
 import colors from './colors.js';
+import './stacked.css';
 
 let memoize = fn => {
   const cache = {};
@@ -97,14 +98,14 @@ function extractInformationFromSlice(data, parentKey, usedKeys) {
   return datum;
 }
 
-function generateRects(selection, xAxisDomainKey, series, tooltip, x, y) {
+function generateRects(selection, domainKey, series, tooltip, x, y) {
 
   const usedKeys = series.map(s => s.key);
 
   selection.enter()
     .append("rect")
       .attr("width", x.bandwidth())
-      .attr("x", d => x(d.data[xAxisDomainKey]))
+      .attr("x", d => x(d.data[domainKey]))
       .attr("y", d => y(d[1]))
       .attr("height", d => y(d[0]) - y(d[1]))
       .on("mouseover", function(d) {
@@ -117,15 +118,15 @@ function generateRects(selection, xAxisDomainKey, series, tooltip, x, y) {
 
 function initialize(data, config) {
 
-  const { id, xAxisDomainKey, coordinateSystem,
-          xAxisLabel, yAxisLabel, stackKeys, tooltip } = config;
+  const { id, domainKey, coordinateSystem,
+          domainLabel, stackLabel, stackKeys, tooltip } = config;
   const { width, height } = calcDimentions(margin, coordinateSystem.width, coordinateSystem.height);
   const x = memoScaleBand(width);
   const y = memoScaleLinear(height);
   const color = scaleOrdinal(colors);
-  const series = calcSeries(stackKeys, data, xAxisDomainKey);
+  const series = calcSeries(stackKeys, data, domainKey);
 
-  x.domain(data.map(d => d[xAxisDomainKey]));
+  x.domain(data.map(d => d[domainKey]));
   console.log("x domain is ", x.domain());
 
   y.domain(calcYDomain(series)).nice();
@@ -135,13 +136,13 @@ function initialize(data, config) {
               .append("g")
                 .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-  const main = svg.selectAll(".stack").data(series);
-
   // yaxis comes first so it is behind the graph
   // size of -width to cover the whole width of the graph
   svg.append("g")
        .attr("class", "yaxis")
        .call(axisLeft(y).tickSize(-width));
+
+  const main = svg.selectAll(".stack").data(series);
 
   const stacks = main.enter()
                    .append("g")
@@ -150,7 +151,7 @@ function initialize(data, config) {
 
   const rectangles = stacks.selectAll("rect").data(d => d);
 
-  generateRects(rectangles, xAxisDomainKey, series, tooltip, x, y);
+  generateRects(rectangles, domainKey, series, tooltip, x, y);
 
   svg
    .append("g")
@@ -160,24 +161,24 @@ function initialize(data, config) {
 
   svg.select("text.xaxis").remove();
 
-  if (yAxisLabel) {
+  if (stackLabel) {
     svg.select("text.yaxislabel").remove();
     svg
      .append("text")
        .attr("class", "yaxislabel")
        .attr("transform", "translate(-50, 30) rotate(-90)")
        .style("text-anchor", "start")
-       .text(yAxisLabel);
+       .text(stackLabel);
   }
 
-  if (xAxisLabel) {
+  if (domainLabel) {
     svg.select("text.xaxislabel").remove();
     svg
      .append("text")
        .attr("class", "xaxislabel")
        .attr("transform", `translate(${width - 50}, ${height + (margin.bottom/1.5)})`)
        .style("text-anchor", "start")
-       .text(xAxisLabel);
+       .text(domainLabel);
   }
 
 	generateLegend(svg.selectAll("g.legend"), calcSortedKeys(series), color, width);
@@ -185,15 +186,15 @@ function initialize(data, config) {
 
 function update(data, config) {
 
-  const { id, xAxisDomainKey, coordinateSystem,
-          xAxisLabel, yAxisLabel, stackKeys, tooltip } = config;
+  const { id, domainKey, coordinateSystem,
+          domainLabel, stackLabel, stackKeys, tooltip } = config;
   const { width, height } = calcDimentions(margin, coordinateSystem.width, coordinateSystem.height);
   const x = memoScaleBand(width);
   const y = memoScaleLinear(height);
   const color = scaleOrdinal(colors);
- 	const series = calcSeries(stackKeys, data, xAxisDomainKey);
+ 	const series = calcSeries(stackKeys, data, domainKey);
 
-  x.domain(data.map(d => d[xAxisDomainKey]));
+  x.domain(data.map(d => d[domainKey]));
   console.log("x domain is ", x.domain());
 
   y.domain(calcYDomain(series)).nice();
@@ -217,7 +218,7 @@ function update(data, config) {
 
   const rectangles = stacks.selectAll("rect").data(d => d);
 
-  generateRects(rectangles, xAxisDomainKey, series, tooltip, x, y);
+  generateRects(rectangles, domainKey, series, tooltip, x, y);
 
   rectangles.exit().remove();
 
@@ -226,14 +227,14 @@ function update(data, config) {
 
   svg.select("text.xaxis").remove();
 
-  if (yAxisLabel) {
+  if (stackLabel) {
     svg.select("text.yaxislabel")
-         .text(yAxisLabel);
+         .text(stackLabel);
   }
 
-  if (xAxisLabel) {
+  if (domainLabel) {
     svg.select("text.xaxislabel")
-         .text(xAxisLabel);
+         .text(domainLabel);
   }
 
 	generateLegend(svg.selectAll("g.legend"), calcSortedKeys(series), color, width);

@@ -1,0 +1,28 @@
+.stacked rect {
+  cursor: pointer;
+}
+
+.stacked rect:hover {
+  stroke: firebrick;
+}
+
+.stacked .yaxis path {
+  display: none;
+}
+
+.stacked .yaxis line {
+  stroke: blanchedalmond;
+}
+
+.stacked .yaxis .tick:first-of-type line {
+  stroke: black;
+}
+
+.stacked .xaxis line {
+  display: none;
+}
+
+.stacked .xaxis path {
+  display: none;
+  shape-rendering: crispEdges;
+}

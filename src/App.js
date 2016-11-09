@@ -1,10 +1,11 @@
 import React, { PropTypes, Component } from 'react';
 import logo from './logo.svg';
 import Graphy from './React-Graph.js';
-import graph from './stacked.js';
+import graph from './stacked-horizontal.js';
 import Tooltip from './Tooltip.js';
 import StackTooltipContent from './StackTooltipContent.js';
 import './App.css';
+import './stacked-horizontal.css';
 
 class App extends Component {
 
@@ -27,10 +28,12 @@ class App extends Component {
   render() {
     const { data, handlers, showTooltip, tooltipX, tooltipY, tooltipData } = this.props.state
     const graphConfig = {
-      xAxisDomainKey: "name",
-      xAxisLabel: "Rooms",
-      yAxisLabel: "Pets",
+      domainKey: "name",
+      domainLabel: "Rooms",
+      stackLabel: "Pets",
       stackKeys: ["dogs", "cats", "goats"],
+      // this should be derived or imported
+      svgClass: "stackedHorizontal",
       id: "stack",
       // this becomes viewBox but is also used for internal
       // calculations similar to http://bl.ocks.org/mbostock/3019563
