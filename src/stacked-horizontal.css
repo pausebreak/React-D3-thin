@@ -1,0 +1,21 @@
+
+.stackedHorizontal {
+
+}
+
+.stackedHorizontal rect {
+  cursor: pointer;
+}
+
+.stackedHorizontal rect:hover {
+  stroke: firebrick;
+}
+
+.stackedHorizontal .yaxis path, .stackedHorizontal .yaxis line {
+  display: none;
+}
+
+.stackedHorizontal .xaxis path {
+  shape-rendering: crispEdges;
+}
+
